@@ -1,33 +1,63 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import Header from './Header'
 import { BACKGROUND_IMG } from '../util/util'
+import { checkValidData } from '../util/validate'
 
 const Login = () => {
-  return (
-    <div className='bg-transparent'>
-      <Header />
-      <div className=' bg-black absolute'>
-        <img src={BACKGROUND_IMG} className=' bg-opacity-70 ' />
-      </div>
-      <form className=' w-[450px] h-auto absolute inset-0 p-12 bg-black my-28 mx-auto right-0 left-0 text-white opacity-80'>
-        <h1 className='font-bold text-3xl py-4'>Sign In</h1>
-        <input type='text' placeholder='Email or phone number' className='p-2 m-2 my-6 w-full bg-gray-900 rounded-sm px-4 py-2 h-14 ' />
-        <input type='text' placeholder='Password' className='p-2 m-2 my-1 w-full bg-gray-900 rounded-sm px-4 py-2 h-14 ' />
-        <button className='p-2 m-2 my-6 w-full rounded-sm px-4 py-2' style={{ backgroundColor: 'rgba(255, 0, 0, 1)' }}>
-  Sign In
-</button>
-        <h4 className=' flex justify-center font-semibold '>OR</h4>
-        <button class="p-2 m-2 my-6 bg-white bg-opacity-30 w-full rounded-s text-white font-semibold  ">
-          Use a sign-in code
-        </button>
-        <h6 className=' flex justify-center font-semibold '>Forgot Password ?</h6>
-        <span className='flex my-6'>
-        <input type='checkbox' className='form-checkbox h-5 w-5 rounded-full bg-transparent' />
-        <h6 className='px-3' >Remember me</h6>
-        </span>
-        <p className='my-5' >New to Netflix? <span className=' font-bold '>Sign up now. </span> </p>
 
+  const [isSigIn, setIsSignIn] = useState(true)
+  const email = useRef(null)
+  const password = useRef(null)
+
+  const toggleSignInForm = () => {
+    setIsSignIn(!isSigIn)
+  }
+
+  const handleButtonClick = () => {
+
+     const message = checkValidData(email.current.value , password.current.value)
+    console.log(message)
+  }
+
+  return (
+    <div className='relative w-full h-screen'>
+      <Header />
+      <div
+        className='absolute top-0 left-0 w-full h-full bg-cover bg-center'
+        style={{ backgroundImage: `url(${BACKGROUND_IMG})` }}
+      >
+        <div className='absolute inset-0 bg-black opacity-50 bg-gradient '></div>
+      </div>
+      <form onSubmit={(e)=>e.preventDefault()} className=' w-full max-w-lg h-full absolute inset-0 p-12 bg-black my-28 mx-auto right-0 left-0 text-white opacity-80'>
+        <h1 className='font-bold text-3xl py-4'>{isSigIn ? "Sign In" : "Sign up"}</h1>
+        { !isSigIn ?
+                  <input type='text' placeholder='Full Name' className='p-2 m-2 my-1 w-full bg-gray-900 rounded-sm px-4 py-2 h-14 ' />: ""
+        }
+        <input type='text' ref={email} placeholder='Email or phone number' className='p-2 m-2 my-6 w-full bg-gray-900 rounded-sm px-4 py-2 h-14 ' />
+        <input type='password' ref={password} placeholder='Password' className='p-2 m-2 my-1 w-full bg-gray-900 rounded-sm px-4 py-2 h-14 ' />
+        <button type='submit' className='p-2 m-2 my-6 w-full rounded-sm px-4 py-2 font-bold' style={{ backgroundColor: 'rgba(255, 0, 0, 1)' }} onClick={handleButtonClick}>
+        {isSigIn ? "Sign In" : "Sign up"}
+        </button>
+        {isSigIn ?
+            <>
+            <h4 className=' flex justify-center font-semibold '>OR</h4>
+            <button class="p-2 m-2 my-6 bg-white bg-opacity-30 w-full rounded-s text-white font-semibold  ">
+              Use a sign-in code
+            </button></> : ''
+        }
+
+        {
+          isSigIn ? <> <h6 className=' flex justify-center font-semibold '>Forgot Password ?</h6> 
+        <span className='flex my-6'>
+          <input type='checkbox' className='form-checkbox h-5 w-5 rounded-full bg-transparent' />
+          <h6 className='px-3' >Remember me</h6>
+        </span></> : ''
+        }
+        {isSigIn ? <p className='my-5 ' >New to Netflix?<span className=' font-bold cursor-pointer ' onClick={toggleSignInForm}> Sign up now. </span> </p> :
+          <p className='my-5 ' >Already have an account?  <span className=' font-bold cursor-pointer ' onClick={toggleSignInForm}>Sign in now. </span> </p>
+        }
       </form>
+ 
     </div>
   )
 }
