@@ -3,11 +3,12 @@ import Header from './Header'
 import { BACKGROUND_IMG } from '../util/util'
 import { checkValidData } from '../util/validate'
 import { auth } from '../util/firebase'
-import {createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 const Login = () => {
 
   const [isSigIn, setIsSignIn] = useState(true)
   const [errMessage, setErrMessage] = useState('')
+  const [invalidCredentials , setInvalidCredentials] = useState('')
   const fullName = useRef(null)
   const email = useRef(null)
   const password = useRef(null)
@@ -17,8 +18,8 @@ const Login = () => {
   }
 
   const handleButtonClick = () => {
-
-    const message = checkValidData(email.current.value, password.current.value, fullName.current.value)
+    const fullNameValue = !isSigIn && fullName.current ? fullName.current.value : null;
+    const message = checkValidData(email.current.value, password.current.value, fullNameValue )
     setErrMessage(message)
     console.log(errMessage)
     if (message) return;
@@ -35,15 +36,27 @@ const Login = () => {
 
         })
         .catch((error) => {
+          console.log(error)
           const errorCode = error.code;
           const errorMessage = error.message;
           // ..
-          setErrMessage(errorCode + "-" + errorMessage
-
-          )
+          setErrMessage(errorCode + "-" + errorMessage)
         });
     } else {
       //signin logic
+      signInWithEmailAndPassword(auth,  email.current.value, password.current.value)
+        .then((userCredential) => {
+          // Signed in 
+          const user = userCredential.user;
+          console.log(user)
+          setInvalidCredentials('')
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setInvalidCredentials(errorCode + "-" + errorMessage);
+        });
     }
   }
 
@@ -68,6 +81,7 @@ const Login = () => {
 
         <input type='password' ref={password} placeholder='Password' className='p-2 m-2 my-1 w-full bg-gray-900 rounded-sm px-4 py-2 h-14 ' />
         <p className='mx-5 text-red-600 font-normal '>{errMessage?.passwordErr}</p>
+        <p className='mx-5 text-red-600 font-normal '>{invalidCredentials ? 'invalid credentials' : ''}</p>
         <button type='submit' className='p-2 m-2 my-6 w-full rounded-sm px-4 py-2 font-bold' style={{ backgroundColor: 'rgba(255, 0, 0, 1)' }} onClick={handleButtonClick}>
           {isSigIn ? "Sign In" : "Sign up"}
         </button>
