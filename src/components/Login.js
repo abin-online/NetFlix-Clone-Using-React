@@ -6,6 +6,8 @@ import { checkValidData } from '../util/validate'
 const Login = () => {
 
   const [isSigIn, setIsSignIn] = useState(true)
+  const [errMessage , setErrMessage] = useState('')
+  const fullName = useRef(null)
   const email = useRef(null)
   const password = useRef(null)
 
@@ -15,8 +17,9 @@ const Login = () => {
 
   const handleButtonClick = () => {
 
-     const message = checkValidData(email.current.value , password.current.value)
-    console.log(message)
+    const message = checkValidData(email.current.value , password.current.value , fullName.current.value)
+    setErrMessage(message)
+    console.log(errMessage)
   }
 
   return (
@@ -31,10 +34,15 @@ const Login = () => {
       <form onSubmit={(e)=>e.preventDefault()} className=' w-full max-w-lg h-full absolute inset-0 p-12 bg-black my-28 mx-auto right-0 left-0 text-white opacity-80'>
         <h1 className='font-bold text-3xl py-4'>{isSigIn ? "Sign In" : "Sign up"}</h1>
         { !isSigIn ?
-                  <input type='text' placeholder='Full Name' className='p-2 m-2 my-1 w-full bg-gray-900 rounded-sm px-4 py-2 h-14 ' />: ""
+                  <input type='text' ref={fullName} placeholder='Full Name' className='p-2 m-2 my-1 w-full bg-gray-900 rounded-sm px-4 py-2 h-14 ' />: ""
         }
+        <p className='mx-5 text-red-600 font-normal '>{errMessage.fullNameErr} </p>
+
         <input type='text' ref={email} placeholder='Email or phone number' className='p-2 m-2 my-6 w-full bg-gray-900 rounded-sm px-4 py-2 h-14 ' />
+        <p className='mx-5 text-red-600 font-normal '>{errMessage.emailErr} </p>
+
         <input type='password' ref={password} placeholder='Password' className='p-2 m-2 my-1 w-full bg-gray-900 rounded-sm px-4 py-2 h-14 ' />
+        <p className='mx-5 text-red-600 font-normal '>{errMessage.passwordErr}</p>
         <button type='submit' className='p-2 m-2 my-6 w-full rounded-sm px-4 py-2 font-bold' style={{ backgroundColor: 'rgba(255, 0, 0, 1)' }} onClick={handleButtonClick}>
         {isSigIn ? "Sign In" : "Sign up"}
         </button>
