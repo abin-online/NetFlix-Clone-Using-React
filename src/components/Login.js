@@ -4,11 +4,13 @@ import { BACKGROUND_IMG } from '../util/util'
 import { checkValidData } from '../util/validate'
 import { auth } from '../util/firebase'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from 'react-router-dom'
 const Login = () => {
 
   const [isSigIn, setIsSignIn] = useState(true)
   const [errMessage, setErrMessage] = useState('')
   const [invalidCredentials , setInvalidCredentials] = useState('')
+  const navigate = useNavigate()
   const fullName = useRef(null)
   const email = useRef(null)
   const password = useRef(null)
@@ -33,6 +35,9 @@ const Login = () => {
           const user = userCredential.user;
           // ...
           console.log(user)
+          
+          
+          navigate('/browse')
 
         })
         .catch((error) => {
@@ -48,8 +53,9 @@ const Login = () => {
         .then((userCredential) => {
           // Signed in 
           const user = userCredential.user;
-          console.log(user)
+          console.log(user);
           setInvalidCredentials('')
+          navigate('/')
           // ...
         })
         .catch((error) => {
