@@ -1,23 +1,47 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NETFLIX_LOGO } from '../util/util';
 import { useNavigate , useLocation} from 'react-router-dom';
 import { auth } from '../util/firebase';
 import { signOut } from 'firebase/auth';
 import { useSelector } from 'react-redux';
+import { onAuthStateChanged } from "firebase/auth";
+import { useDispatch } from 'react-redux'
+import { addUser, removeUser } from '../util/userSlice'
 
 const Header = () => {
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const user = useSelector((store)=> store.user)
   const location = useLocation();
   const handleSignOut = ()=> {
     signOut(auth).then(() => {
       // Sign-out successful.
-      navigate('/')
     }).catch((error) => {
       // An error happened.
       navigate('/error')
     });
   }
+
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const {uid , email , displayName , photoURL} = user;
+        dispatch(addUser({uid: uid , email: email , displayName: displayName}))
+        // ...
+        navigate("/browse")
+      } else {
+        // User is signed out
+        // ...
+        dispatch(removeUser())
+        navigate('/')
+      }
+    });
+    return () => unsubscribe()
+  }, [])
+
   return (
     <div className="absolute top-0 w-full flex justify-between items-center px-8 py-4 bg-gradient-to-b from-black via-transparent to-transparent z-10">
       <img  
