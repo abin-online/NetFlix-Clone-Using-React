@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react'
 import Header from './Header'
-import { BACKGROUND_IMG } from '../util/util'
+import { BACKGROUND_IMG, PROFILE_PIC } from '../util/util'
 import { checkValidData } from '../util/validate'
 import { auth } from '../util/firebase'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useNavigate } from 'react-router-dom'
 const Login = () => {
 
@@ -35,9 +35,20 @@ const Login = () => {
           const user = userCredential.user;
           // ...
           console.log(user)
+          updateProfile(user, {
+            displayName: fullName.current.value, photoURL: {PROFILE_PIC}
+          }).then(() => {
+            // Profile updated!
+            navigate('/browse')
+          }).catch((error) => {
+            // An error occurred
+            setErrMessage(error.message)
+          });
           
-          
+          //window.location.href = '/browse';
+
           navigate('/browse')
+          console.log('navigated to browseeer')
 
         })
         .catch((error) => {
@@ -55,7 +66,7 @@ const Login = () => {
           const user = userCredential.user;
           console.log(user);
           setInvalidCredentials('')
-          navigate('/')
+          navigate('/browse')
           // ...
         })
         .catch((error) => {
